@@ -430,23 +430,30 @@ float BMI2_BMM1_Class::gyroscopeSampleRate() {
   return (1 << sens_cfg.cfg.gyr.odr) * 0.39;
 }
 
-int BMI2_BMM1_Class::readGyroAccel(imu_data_t & imu_sensor_data){ // Results are in G (earth gravity). // Results are in degrees/second.
+int BMI2_BMM1_Class::readGyroAccel(imu_data_t & imu_sensor_data, bool raw){ // Results are in G (earth gravity). // Results are in degrees/second.
 struct bmi2_sens_data sensor_data = { { 0 } };
 
     int res = bmi2_get_sensor_data(&sensor_data, &bmi2);
 
+   if(raw == false){
    imu_sensor_data.acc.x = sensor_data.acc.x* 9.8 / BMI2_ACC_FOC_2G_REF;
-
     imu_sensor_data.acc.y  = sensor_data.acc.y* 9.8 / BMI2_ACC_FOC_2G_REF;
-
     imu_sensor_data.acc.z  = sensor_data.acc.z* 9.8 / BMI2_ACC_FOC_2G_REF;
     
      imu_sensor_data.gyr.x  = sensor_data.gyr.x / BMI2_GYRO_FOC_2000_DPS_REF;
-
     imu_sensor_data.gyr.y = sensor_data.gyr.y / BMI2_GYRO_FOC_2000_DPS_REF;
-
     imu_sensor_data.gyr.z = sensor_data.gyr.z / BMI2_GYRO_FOC_2000_DPS_REF;
-
+}
+else // raw true
+{
+    imu_sensor_data.acc.x = sensor_data.acc.x;
+    imu_sensor_data.acc.y  = sensor_data.acc.y;
+    imu_sensor_data.acc.z  = sensor_data.acc.z;
+    
+    imu_sensor_data.gyr.x  = sensor_data.gyr.x;
+    imu_sensor_data.gyr.y = sensor_data.gyr.y;
+    imu_sensor_data.gyr.z = sensor_data.gyr.z;
+}
     return res;
     
 }
